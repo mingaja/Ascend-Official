@@ -11,9 +11,11 @@ Sigil.Appearance = {
     Icon            = "",   -- optional rbxassetid:// shown left of the wordmark
 }
 
-Sigil.Links.Discord = "https://discord.gg/2tyykkv2Kd"
+Sigil.Links.Discord = "discord.gg/jnkie"
 Sigil.Storage.FileName = "Jnkie_key"
 -- Sigil.Options.KeylessUi = "true"
+
+
 
 
 Sigil:LaunchJunkie({
@@ -21,7 +23,7 @@ Sigil:LaunchJunkie({
     Identifier = "1213946",
     Provider = "Ascend"
 })
-
+    
 
 -- This file was protected using Luraph Obfuscator v14.9 [https://lura.ph/]
 
