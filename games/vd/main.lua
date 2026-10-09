@@ -17,7 +17,7 @@ Sigil.Storage.FileName = "Jnkie_key"
 
 
 Sigil:LaunchJunkie({
-    Service = "Ascend Premium",
+    Service = "Ascend Official",
     Identifier = "1213946",
     Provider = "Ascend"
 })
