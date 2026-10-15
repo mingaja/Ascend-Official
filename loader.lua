@@ -12,6 +12,7 @@ local RAW = "https://raw.githubusercontent.com/mingaja/Ascend-Official/main"
 
 local GAMES = {
     ["93978595733734"] = "games/vd/main.lua",
+    ["10563114921"] = "games/sae/main.lua",
 
     -- tambah game baru di sini:
     -- ["PLACEID"] = "games/NAMA/main.lua",
