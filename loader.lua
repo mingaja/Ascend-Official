@@ -9,27 +9,27 @@
 local RAW = "https://raw.githubusercontent.com/mingaja/Ascend-Official/main"
 
 -- ================================================
---   DAFTAR GAME
---   Key bisa GameId (UniverseId) ATAU PlaceId (angka / string).
---   GameId sama untuk semua map dalam satu game.
+--   DAFTAR GAME (Key = PlaceId)
+--   Cari PlaceId: print(game.PlaceId) di executor
+--   atau ambil angka dari link browser Roblox: roblox.com/games/PLACEID/...
 -- ================================================
 
 local GAMES = {
-	-- Steal An Egg (UniverseId: 10563114921 | PlaceId: 107778070777162)
-	[10563114921] = { name = "Steal An Egg", path = "games/sae/main.lua" },
-	
-	-- VD (UniverseId: 6739698191 | PlaceId: 93978595733734)
-	[6739698191] = { name = "VD", path = "games/vd/main.lua" },
-	
+	-- Steal An Egg
+	["107778070777162"] = { name = "Steal An Egg", path = "games/sae/main.lua" },
+
+	-- Violence District (VD)
+	["93978595733734"] = { name = "Violence District", path = "games/vd/main.lua" },
+
 	-- Tambah game baru di sini:
-	-- [GAME_ID] = { name = "Nama Game", path = "games/nama/main.lua" },
+	-- [PLACE_ID] = { name = "Nama Game", path = "games/nama/main.lua" },
 }
 
 -- ================================================
 --   LOADER CORE
 -- ================================================
 
--- Debounce 3 detik agar tidak spam-click tapi TIDAK lock permanen jika ada error
+-- Debounce 3 detik agar tidak spam-click tapi tidak lock permanen jika ada error koneksi
 local genv = (type(getgenv) == "function" and getgenv()) or _G
 local now = tick()
 if genv.__AscendLoaderLastRun and (now - genv.__AscendLoaderLastRun) < 3 then
@@ -48,38 +48,31 @@ local function notify(title, text)
 	end)
 end
 
--- Tunggu game loaded jika dipanggil sangat awal
+-- Tunggu game selesai loading jika dipanggil di Auto Execute
 if not game:IsLoaded() then
 	pcall(function() game.Loaded:Wait() end)
 end
 
--- Tunggu GameId ter-replicate (kadang 0 di detik pertama)
-local waitStart = tick()
-while (not game.GameId or game.GameId == 0) and (tick() - waitStart) < 5 do
-	task.wait(0.2)
+local placeId = game.PlaceId
+local entry = GAMES[placeId] or GAMES[tostring(placeId)]
+
+-- Fallback opsional ke GameId jika user mendaftarkan GameId
+if not entry and game.GameId and game.GameId ~= 0 then
+	entry = GAMES[game.GameId] or GAMES[tostring(game.GameId)]
 end
 
-local gameId = game.GameId
-local placeId = game.PlaceId
-
--- Cari konfigurasi game berdasarkan GameId atau PlaceId
-local entry = GAMES[gameId]
-	or GAMES[tostring(gameId)]
-	or GAMES[placeId]
-	or GAMES[tostring(placeId)]
-
 if not entry then
-	warn(string.format("[Ascend Loader] Game belum didukung. GameId: %s | PlaceId: %s", tostring(gameId), tostring(placeId)))
-	notify("Ascend Loader", "Game belum didukung (GameId: " .. tostring(gameId) .. ")")
+	warn(string.format("[Ascend Loader] PlaceId belum didukung: %s (GameId: %s)", tostring(placeId), tostring(game.GameId)))
+	notify("Ascend Loader", "Game belum didukung (PlaceId: " .. tostring(placeId) .. ")")
 	return
 end
 
-print(string.format("[Ascend Loader] %s terdeteksi (GameId %s). Mengambil script...", entry.name, tostring(gameId)))
+print(string.format("[Ascend Loader] %s terdeteksi (PlaceId %s). Mengambil script...", entry.name, tostring(placeId)))
 notify("Ascend Loader", "Memuat " .. entry.name .. "...")
 
 -- Multi-fallback HTTP fetch
 local function fetchScript(url)
-	-- Cara 1: game:HttpGet standar tanpa query param
+	-- Cara 1: game:HttpGet standar
 	local ok, body = pcall(function()
 		return game:HttpGet(url)
 	end)
@@ -128,8 +121,8 @@ if not fn then
 end
 
 -- Eksekusi di thread Luau baru via task.spawn
--- JANGAN pakai xpcall langsung karena script game memanggil task.wait/yield yang akan
--- menyebabkan error 'attempt to yield across C-call boundary' jika dibungkus xpcall!
+-- Jangan pakai xpcall langsung karena script game memanggil task.wait/yield yang akan
+-- memicu error 'attempt to yield across C-call boundary' jika dibungkus xpcall.
 task.spawn(function()
 	local ok, runErr = pcall(fn)
 	if not ok then
