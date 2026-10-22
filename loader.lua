@@ -16,10 +16,10 @@ local RAW = "https://raw.githubusercontent.com/mingaja/Ascend-Official/main"
 
 local GAMES = {
 	-- Steal An Egg
-	["107778070777162"] = { name = "Steal An Egg", path = "games/sae/main.lua" },
+	["107778070777162"] = { name = "Steal An Egg", path = "games/sae.lua" },
 
 	-- Violence District (VD)
-	["93978595733734"] = { name = "Violence District", path = "games/vd/main.lua" },
+	["93978595733734"] = { name = "Violence District", path = "games/vd.lua" },
 
 	-- Tambah game baru di sini:
 	-- [PLACE_ID] = { name = "Nama Game", path = "games/nama/main.lua" },
